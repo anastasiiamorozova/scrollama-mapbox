@@ -2,18 +2,22 @@
 <html>
 <head>
     <meta charset='utf-8' />
-    <title>Mapbox Storytelling</title>
+    <title>Sumy Shelters</title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/mapbox/assembly/publisher-staging/src/svgs/mapbox.svg">
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js'></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css' rel='stylesheet' />
+    <link href="https://api.mapbox.com/mapbox-assembly/v3.5.1/assembly.min.css" rel="stylesheet">
     <script src="https://unpkg.com/intersection-observer@0.12.0/intersection-observer.js"></script>
     <script src="https://unpkg.com/scrollama"></script>
+    <script id="search-js" defer="" src="https://api.mapbox.com/search-js/v1.0.0-beta.21/web.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Mulish' rel='stylesheet'>
+    
     <style>
         body {
             margin:0;
             padding:0;
-            font-family: sans-serif;
+            font-family: 'Mulish';
         }
         a, a:hover, a:visited {
             color: #0071bc;
@@ -48,13 +52,46 @@
             margin: auto;
             width: 100%;
             position: relative;
-            z-index: 5;
-            opacity: 0.8;
+            min-height: 100vh;
+            min-height: max(100vh, 100dvh, 100lvh);
+            z-index: 0;
+            transition: opacity 0.5s;
+
         }
-        #header h1, #header h2, #header p {
-            margin: 0;
-            padding: 15vh 20vw;
+        
+        #header h1 {
             text-align: center;
+            font-size: 80px;
+            font-weight: 1000;
+            margin-top: 0;
+            padding-top: 3em;
+            opacity: 1;
+            font-family: 'Mulish';
+            font-weight: 900;
+            margin: 0 auto 8px;
+            max-width: 85%;
+        }
+        
+        #header h2{
+            padding: 2vh 10vw;
+            text-align: center;
+            font-size: 24px;
+            margin: 0 auto 12px;
+            max-width: 85%;
+            font-family: 'Mulish';
+            font-weight: 500;
+            font-style: italic;
+            color: #5e5d5d;
+
+        } 
+        
+        #header p {
+            margin: 0;
+            padding: 3vh 10vw;
+            text-align: center;
+            font-family: 'Mulish';
+            font-weight: 700;
+            font-style: bold;
         }
         #footer {
             width: 100%;
@@ -95,8 +132,8 @@
             background-color: #fafafa;
         }
         .dark {
-            color: #fafafa;
-            background-color: #542525;
+            color: #2C2B28;
+            background-color: rgba(241, 221, 204, 0.6);
         }
         .step {
             padding-bottom: 50vh;
@@ -115,6 +152,15 @@
 
         .step img {
             width: 100%;
+        }
+
+        .mapboxgl-ctrl-top-right {
+    right: 38% !important; 
+    top: 50% !important;
+    display: none;
+}
+        .show {
+            display: block !important;
         }
 
         @media (max-width: 750px) {
@@ -137,6 +183,44 @@
 <div id="map"></div>
 <div id="mapInset"></div>
 <div id="story"></div>
+<!-- Load Mapbox GL JS -->
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js"></script>
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiYW5hc3Rhc2lpYS1tb3Jvem92YSIsImEiOiJjbHlpeGd2bmgwaWRvMmtvanpvbXB3bWdsIn0.5b13QMKiY7mzSJOnjp7Wlg';
+    const mainMap = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/anastasiia-morozova/clynde5kc01y801nzd18zaqne',
+        center: [-73.99209, 40.68933],
+        zoom: 8.8
+    });
+    const searchJS = document.getElementById('search-js');
+    searchJS.onload = function () {
+        const searchBox = new MapboxSearchBox();
+        searchBox.accessToken = 'pk.eyJ1IjoiYW5hc3Rhc2lpYS1tb3Jvem92YSIsImEiOiJjbHlpeGd2bmgwaWRvMmtvanpvbXB3bWdsIn0.5b13QMKiY7mzSJOnjp7Wlg';
+        searchBox.options = {
+            types: 'address,poi',
+            proximity: [-73.99209, 40.68933]
+        };
+        searchBox.marker = true;
+        searchBox.mapboxgl = mapboxgl;
+        mainMap.addControl(searchBox);
+    };
+
+    function handleScroll() {
+            const geocoderElement = document.querySelector('.mapboxgl-ctrl-top-right');
+            if (window.scrollY > 1000) { // Change 100 to the scroll position you want
+                geocoderElement.classList.add('show');
+            } else {
+                geocoderElement.classList.remove('show');
+            }
+        };
+        window.addEventListener('scroll', handleScroll);
+
+        geocoder.on('result', (e) => { map.flyTo({ center: e.result.center, zoom: 12 }); });
+</script>
+
+
 
 <script src="./config.js"></script>
 <script>
@@ -159,7 +243,7 @@ var alignments = {
 }
 
 function getLayerPaintType(layer) {
-    var layerType = map.getLayer(layer).type;
+    var layerType = mainMap.getLayer(layer).type;
     return layerTypes[layerType];
 }
 
@@ -170,9 +254,9 @@ function setLayerOpacity(layer) {
         if (layer.duration) {
             var transitionProp = prop + "-transition";
             options = { "duration": layer.duration };
-            map.setPaintProperty(layer.layer, transitionProp, options);
+            mainMap.setPaintProperty(layer.layer, transitionProp, options);
         }
-        map.setPaintProperty(layer.layer, prop, layer.opacity, options);
+        mainMap.setPaintProperty(layer.layer, prop, layer.opacity, options);
     });
 }
 
