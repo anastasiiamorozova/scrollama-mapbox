@@ -136,6 +136,25 @@ bearing: 0.00
             callback: '',
             onChapterEnter: [],
             onChapterExit: []
+        }, 
+        {
+            id: 'search',
+            alignment: 'right',
+            hidden: false,
+            title: 'Подивіться чи на вашій вулиці є укриття',
+            //image: './path/to/image/source.png',
+            //description: 'Copy these sections to add to your story.',
+            location: {
+                center:[34.07056, 51.38996],
+                zoom: 7.5,
+                pitch: 25.00,
+                bearing: 0.00
+            },
+            //mapAnimation: 'flyTo',
+            //rotateAnimation: false,
+            callback: '',
+            onChapterEnter: [],
+            onChapterExit: []
         }
     ]
 };
