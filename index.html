@@ -1,21 +1,39 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset='utf-8' />
+  <head>
+    <meta charset="utf-8" />
     <title>Sumy Shelters</title>
-    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-    <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/mapbox/assembly/publisher-staging/src/svgs/mapbox.svg">
-    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js'></script>
-    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css' rel='stylesheet' />
-    <link href="https://api.mapbox.com/mapbox-assembly/v3.5.1/assembly.min.css" rel="stylesheet">
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://raw.githubusercontent.com/mapbox/assembly/publisher-staging/src/svgs/mapbox.svg"
+    />
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js"></script>
+    <link
+      href="https://api.tiles.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://api.mapbox.com/mapbox-assembly/v3.5.1/assembly.min.css"
+      rel="stylesheet"
+    />
     <script src="https://unpkg.com/intersection-observer@0.12.0/intersection-observer.js"></script>
     <script src="https://unpkg.com/scrollama"></script>
-    <script id="search-js" defer="" src="https://api.mapbox.com/search-js/v1.0.0-beta.21/web.js"></script>
-    <link href='https://fonts.googleapis.com/css?family=Mulish' rel='stylesheet'>
-    
+    <script
+      id="search-js"
+      defer=""
+      src="https://api.mapbox.com/search-js/v1.0.0-beta.21/web.js"
+    ></script>
+    <link
+      href="https://fonts.googleapis.com/css?family=Mulish"
+      rel="stylesheet"
+    />
+
     <style>
-
-
       body {
         margin: 0;
         padding: 0;
@@ -195,8 +213,7 @@
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js"></script>
 
     <script>
-
-    const searchJS = document.getElementById("search-js");
+      const searchJS = document.getElementById("search-js");
       searchJS.onload = function () {
         const searchBox = new MapboxSearchBox();
         searchBox.accessToken =
@@ -224,10 +241,10 @@
       }
       window.addEventListener("scroll", handleScroll);
 
-      geocoder.on('result', (e) => { map.flyTo({ center: e.result.center, zoom: 12 }); });
-
+      geocoder.on("result", (e) => {
+        map.flyTo({ center: e.result.center, zoom: 12 });
+      });
     </script>
-
 
     <script src="./config.js"></script>
     <script>
@@ -374,6 +391,7 @@
         projection: config.projection,
       });
 
+      //map.addControl(mapboxgl.NavigationControl());
       // Create a inset map if enabled in config.js
       if (config.inset) {
         var insetMap = new mapboxgl.Map({
@@ -426,6 +444,7 @@
         if (config.inset) {
           map.on("move", getInsetBounds);
         }
+
         // setup the instance, pass callback functions
         scroller
           .setup({
@@ -451,6 +470,23 @@
               } else {
                 insetMap.flyTo({ center: chapter.location.center, zoom: 3 });
               }
+            }
+            if (chapter.interactive) {
+              map.boxZoom.enable();
+              map.scrollZoom.enable();
+              map.dragPan.enable();
+              map.dragRotate.enable();
+              map.keyboard.enable();
+              map.doubleClickZoom.enable();
+              map.touchZoomRotate.enable();
+            } else {
+              map.boxZoom.disable();
+              map.scrollZoom.disable();
+              map.dragPan.disable();
+              map.dragRotate.disable();
+              map.keyboard.disable();
+              map.doubleClickZoom.disable();
+              map.touchZoomRotate.disable();
             }
             if (config.showMarkers) {
               marker.setLngLat(chapter.location.center);
@@ -565,7 +601,7 @@
 
       function updateInsetLayer(bounds) {
         insetMap.getSource("boundsSource").setData(bounds);
-      };
+      }
 
       // setup resize event
       window.addEventListener("resize", scroller.resize);

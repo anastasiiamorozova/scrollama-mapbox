@@ -141,6 +141,7 @@ bearing: 0.00
             id: 'search',
             alignment: 'right',
             hidden: false,
+            interactive:true,
             title: 'See if your street is in the safe area.',
             //image: './path/to/image/source.png',
             //description: 'Copy these sections to add to your story.',
